@@ -55,7 +55,7 @@ public class DriveTrainOnly extends LinearOpMode {
                 double backLeftPower = axial - lateral + yaw;
                 double backRightPower = axial + lateral + yaw;
 
-                // Scale all four powers together only when a magnitude exceeds 1.
+                // Scale all four powers together only when a magnitude exceeds 1. 123
                 double max = Math.max(
                         Math.max(Math.abs(frontLeftPower), Math.abs(frontRightPower)),
                         Math.max(Math.abs(backLeftPower), Math.abs(backRightPower)));
