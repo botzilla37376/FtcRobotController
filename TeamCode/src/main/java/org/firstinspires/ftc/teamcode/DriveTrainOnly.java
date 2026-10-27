@@ -8,9 +8,9 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 public class DriveTrainOnly extends LinearOpMode {
 
     // Original input multipliers, applied before wheel-power normalization.
-    private static final double AXIAL_SCALE = 1;
-    private static final double LATERAL_SCALE = 1;
-    private static final double YAW_SCALE = 1;
+    private static final double AXIAL_SCALE = 0.95;
+    private static final double LATERAL_SCALE = 0.95;
+    private static final double YAW_SCALE = 0.95;
 
     private DcMotor frontLeft;
     private DcMotor frontRight;
@@ -46,7 +46,7 @@ public class DriveTrainOnly extends LinearOpMode {
             while (opModeIsActive()) {
                 // Preserve the original mapping: left X -> axial, left Y -> lateral.
                 double axial = AXIAL_SCALE * gamepad1.left_stick_x;
-                double lateral = LATERAL_SCALE * gamepad1.left_stick_y;
+                double lateral = -LATERAL_SCALE * gamepad1.left_stick_y;
                 double yaw = YAW_SCALE * gamepad1.right_stick_x;
 
                 // Original wheel-power calculations.
