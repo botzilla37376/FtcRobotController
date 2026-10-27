@@ -45,7 +45,7 @@ public class DriveTrainOnly extends LinearOpMode {
         try {
             while (opModeIsActive()) {
                 // Preserve the original mapping: left X -> axial, left Y -> lateral.
-                double axial = AXIAL_SCALE * gamepad1.left_stick_x;
+                double axial = AXIAL_SCALE * -gamepad1.left_stick_x;
                 double lateral = -LATERAL_SCALE * gamepad1.left_stick_y;
                 double yaw = YAW_SCALE * gamepad1.right_stick_x;
 
