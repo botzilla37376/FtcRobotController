@@ -4,10 +4,9 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 
-@TeleOp(name = "Power Overdrive - Drive Train Only", group = "Drive")
-public class DriveTrainOnly extends LinearOpMode {
+@TeleOp(name = "Drive With Tosser", group = "Drive")
+public class DriveWithTosser extends LinearOpMode {
 
-    // Original input multipliers, applied before wheel-power normalization.
     private static final double AXIAL_SCALE = 0.95;
     private static final double LATERAL_SCALE = 0.95;
     private static final double YAW_SCALE = 0.95;
@@ -16,46 +15,54 @@ public class DriveTrainOnly extends LinearOpMode {
     private DcMotor frontRight;
     private DcMotor backLeft;
     private DcMotor backRight;
+    private DcMotor tosser;
 
     @Override
     public void runOpMode() {
-        // These names must match the robot's hardware configuration exactly.
+        // Hardware configuration names.
         frontLeft = hardwareMap.get(DcMotor.class, "frontLeft");
         frontRight = hardwareMap.get(DcMotor.class, "frontRight");
         backLeft = hardwareMap.get(DcMotor.class, "backLeft");
         backRight = hardwareMap.get(DcMotor.class, "backRight");
+        tosser = hardwareMap.get(DcMotor.class, "tosser");
 
-        // Motor directions preserved from the supplied Java and Blocks files.
+        // Drive motor directions.
         frontLeft.setDirection(DcMotor.Direction.FORWARD);
         frontRight.setDirection(DcMotor.Direction.FORWARD);
         backLeft.setDirection(DcMotor.Direction.REVERSE);
         backRight.setDirection(DcMotor.Direction.REVERSE);
 
-        for (DcMotor motor : new DcMotor[] {frontLeft, frontRight, backLeft, backRight}) {
+        for (DcMotor motor : new DcMotor[] {
+                frontLeft, frontRight, backLeft, backRight
+        }) {
             motor.setPower(0);
             motor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
             motor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         }
 
-        telemetry.addData("Status", "Drive train initialized");
+        // Tosser setup.
+        tosser.setPower(0);
+        tosser.setDirection(DcMotor.Direction.FORWARD);
+        tosser.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+
+        telemetry.addData("Status", "Drive train and tosser initialized");
         telemetry.update();
 
         waitForStart();
 
         try {
             while (opModeIsActive()) {
-                // Preserve the original mapping: left X -> axial, left Y -> lateral.
+                // Movement controls.
                 double axial = AXIAL_SCALE * -gamepad1.left_stick_x;
                 double lateral = -LATERAL_SCALE * gamepad1.left_stick_y;
                 double yaw = YAW_SCALE * gamepad1.right_stick_x;
 
-                // Original wheel-power calculations.
                 double frontLeftPower = axial + lateral - yaw;
                 double frontRightPower = axial - lateral - yaw;
                 double backLeftPower = axial - lateral + yaw;
                 double backRightPower = axial + lateral + yaw;
 
-                // Scale all four powers together only when a magnitude exceeds 1. 123
+                // Normalize wheel powers when a magnitude exceeds 1.
                 double max = Math.max(
                         Math.max(Math.abs(frontLeftPower), Math.abs(frontRightPower)),
                         Math.max(Math.abs(backLeftPower), Math.abs(backRightPower)));
@@ -72,6 +79,16 @@ public class DriveTrainOnly extends LinearOpMode {
                 backLeft.setPower(backLeftPower);
                 backRight.setPower(backRightPower);
 
+                // Hold X for forward or B for reverse, both at full power.
+                // X takes priority if both buttons are held.
+                if (gamepad1.x) {
+                    tosser.setPower(1.0);
+                } else if (gamepad1.b) {
+                    tosser.setPower(-1.0);
+                } else {
+                    tosser.setPower(0.0);
+                }
+
                 idle();
             }
         } finally {
@@ -79,6 +96,7 @@ public class DriveTrainOnly extends LinearOpMode {
             frontRight.setPower(0);
             backLeft.setPower(0);
             backRight.setPower(0);
+            tosser.setPower(0);
         }
     }
 }
