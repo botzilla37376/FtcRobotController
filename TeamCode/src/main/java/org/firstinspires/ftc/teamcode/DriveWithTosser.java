@@ -11,7 +11,7 @@ public class DriveTestv1 extends LinearOpMode {
     private static final double AXIAL_SCALE = 0.95;
     private static final double LATERAL_SCALE = 0.95;
     private static final double YAW_SCALE = 0.95;
-    private static final double INTAKE_TEST_POWER = 0.45;
+    private static final double INTAKE_TEST_POWER = 1.0;
     private static final double SERVO_TEST_POWER = 1.0;
 
     private DcMotor frontLeft;
@@ -101,7 +101,7 @@ public class DriveTestv1 extends LinearOpMode {
 
                 // X takes priority if both tosser buttons are held.
                 if (gamepad1.x) {
-                    tosser.setPower(1.0);
+                    tosser.setPower(0.45);
                 } else if (gamepad1.b) {
                     tosser.setPower(-1.0);
                 } else {
@@ -137,4 +137,4 @@ public class DriveTestv1 extends LinearOpMode {
             windmill.setPower(0);
         }
     }
-}
+}}
